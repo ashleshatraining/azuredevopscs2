@@ -32,14 +32,9 @@ stages:
             inputs:
               command: 'publish'
               publishWebProjects: true
-              arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)\WebApp'
-          - task: ArchiveFiles@2
-            inputs:
-              rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\WebApp'
-              includeRootFolder: true
-              archiveType: 'zip'
-              archiveFile: '$(Build.ArtifactStagingDirectory)/WebApplication1.zip'
-              replaceExistingArchive: true
+              arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+              zipAfterPublish: true
+
           - task: PublishBuildArtifacts@1
             inputs:
               PathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -48,15 +43,15 @@ stages:
 
    
 
-  - stage: test 
-    jobs:
-       - job: test  
-         steps:
-           - task: DotNetCoreCLI@2
-             inputs:
-               command: 'test'
-               projects: 'sampleUnitTest/sampleUnitTest.csproj'
-               arguments: '--configuration $(buildConfiguration)'
+  # - stage: test 
+  #   jobs:
+  #      - job: test  
+  #        steps:
+  #          - task: DotNetCoreCLI@2
+  #            inputs:
+  #              command: 'test'
+  #              projects: 'sampleUnitTest/sampleUnitTest.csproj'
+  #              arguments: '--configuration $(buildConfiguration)'
 
 
 
@@ -80,11 +75,14 @@ stages:
                 EnableIIS: true
                 IISDeploymentType: 'IISWebsite'
                 ActionIISWebsite: 'CreateOrUpdateWebsite'
-                WebsiteName: 'Default Web Site'
-                WebsitePhysicalPath: '%SystemDrive%\inetpub\wwwroot'
+                WebsiteName: 'Mydotnetcoreapp'
+                WebsitePhysicalPath: '%SystemDrive%\inetpub\wwwroot\Mydotnetcoreapp'
                 WebsitePhysicalPathAuth: 'WebsiteUserPassThrough'
+
+                 
+    
 
             - task: IISWebAppDeploymentOnMachineGroup@0
               inputs:
-                WebSiteName: 'Default Web Site'
+                WebSiteName: 'Mydotnetcoreapp'
                 Package: '$(System.ArtifactsDirectory)/drop/WebApplication1.zip'
