@@ -57,7 +57,7 @@ stages:
   - stage: deploy 
     jobs:
     - deployment: Deploy 
-      environment: 'newdepgroup'
+      environment: 'casestudy3dpgrp'
       strategy:
        runOnce:
         deploy:  
