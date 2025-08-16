@@ -33,7 +33,13 @@ stages:
               command: 'publish'
               publishWebProjects: true
               arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)'
-
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\WebApp'
+              includeRootFolder: true
+              archiveType: 'zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/WebApplication1.zip'
+              replaceExistingArchive: true
           - task: PublishBuildArtifacts@1
             inputs:
               PathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -74,11 +80,11 @@ stages:
                 EnableIIS: true
                 IISDeploymentType: 'IISWebsite'
                 ActionIISWebsite: 'CreateOrUpdateWebsite'
-                WebsiteName: 'Default website'
+                WebsiteName: 'Default Web Site'
                 WebsitePhysicalPath: '%SystemDrive%\inetpub\wwwroot'
                 WebsitePhysicalPathAuth: 'WebsiteUserPassThrough'
 
             - task: IISWebAppDeploymentOnMachineGroup@0
               inputs:
-                WebSiteName: 'Default website'
+                WebSiteName: 'Default Web Site'
                 Package: '$(System.ArtifactsDirectory)/drop/WebApplication1.zip'
