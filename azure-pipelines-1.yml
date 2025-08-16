@@ -32,7 +32,7 @@ stages:
             inputs:
               command: 'publish'
               publishWebProjects: true
-              arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)'
+              arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)\WebApp'
           - task: ArchiveFiles@2
             inputs:
               rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\WebApp'
