@@ -85,4 +85,5 @@ stages:
             - task: IISWebAppDeploymentOnMachineGroup@0
               inputs:
                 WebSiteName: 'Mydotnetcoreapp'
-                Package: '$(System.ArtifactsDirectory)/drop/WebApplication1.zip'
+               # Package: '$(System.ArtifactsDirectory)/drop/WebApplication1.zip'
+                Package: '$(Pipeline.Workspace)/drop/**/*.zip'
