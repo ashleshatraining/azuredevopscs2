@@ -75,8 +75,8 @@ stages:
                 EnableIIS: true
                 IISDeploymentType: 'IISWebsite'
                 ActionIISWebsite: 'CreateOrUpdateWebsite'
-                WebsiteName: 'Mydotnetcoreapp'
-                WebsitePhysicalPath: '%SystemDrive%\inetpub\wwwroot\Mydotnetcoreapp'
+                WebsiteName: 'Default Web Site'
+                WebsitePhysicalPath: '%SystemDrive%\inetpub\wwwroot'
                 WebsitePhysicalPathAuth: 'WebsiteUserPassThrough'
 
                  
@@ -84,6 +84,6 @@ stages:
 
             - task: IISWebAppDeploymentOnMachineGroup@0
               inputs:
-                WebSiteName: 'Mydotnetcoreapp'
+                WebSiteName: 'Default Web Site'
                # Package: '$(System.ArtifactsDirectory)/drop/WebApplication1.zip'
                 Package: '$(Pipeline.Workspace)/drop/**/*.zip'
