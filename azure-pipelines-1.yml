@@ -43,15 +43,15 @@ stages:
 
    
 
-  # - stage: test 
-  #   jobs:
-  #      - job: test  
-  #        steps:
-  #          - task: DotNetCoreCLI@2
-  #            inputs:
-  #              command: 'test'
-  #              projects: 'sampleUnitTest/sampleUnitTest.csproj'
-  #              arguments: '--configuration $(buildConfiguration)'
+  - stage: test 
+    jobs:
+       - job: test  
+         steps:
+           - task: DotNetCoreCLI@2
+             inputs:
+               command: 'test'
+               projects: 'sampleUnitTest/sampleUnitTest.csproj'
+               arguments: '--configuration $(buildConfiguration)'
 
 
 
