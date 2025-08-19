@@ -4,86 +4,94 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  
-pool: 
-  vmImage: 'windows-latest'  
-  
+
+pool:
+  vmImage: 'windows-latest'
+
 stages:
-  - stage: Build 
-    jobs:
-      - job: Build 
-        
-        steps:
-          - task: NuGetToolInstaller@1
-        
-          - task: NuGetCommand@2
-            inputs:
-              command: 'restore'
-              restoreSolution: '$(solution)'
-              feedsToUse: 'select'
+# -------------------- BUILD STAGE --------------------
+- stage: Build
+  jobs:
+    - job: Build
+      steps:
+        - task: NuGetToolInstaller@1
 
-          - task: DotNetCoreCLI@2
-            inputs:
-              command: 'build'
-              projects: '**/*.csproj'
-              arguments: '--configuration $(buildConfiguration)'
+        - task: NuGetCommand@2
+          inputs:
+            command: 'restore'
+            restoreSolution: '$(solution)'
+            feedsToUse: 'select'
 
-          - task: DotNetCoreCLI@2
-            inputs:
-              command: 'publish'
-              publishWebProjects: true
-              arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-              zipAfterPublish: true
+        - task: DotNetCoreCLI@2
+          inputs:
+            command: 'build'
+            projects: '**/*.csproj'
+            arguments: '--configuration $(buildConfiguration)'
 
-          - task: PublishBuildArtifacts@1
-            inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-              ArtifactName: 'drop'
-              publishLocation: 'Container'
+        - task: DotNetCoreCLI@2
+          inputs:
+            command: 'publish'
+            publishWebProjects: true
+            arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+            zipAfterPublish: true
 
-   
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            ArtifactName: 'drop'
+            publishLocation: 'Container'
 
-  - stage: test 
-    jobs:
-       - job: test  
-         steps:
-           - task: DotNetCoreCLI@2
-             inputs:
-               command: 'test'
-               projects: 'sampleUnitTest/sampleUnitTest.csproj'
-               arguments: '--configuration $(buildConfiguration)'
+# -------------------- TEST STAGE --------------------
+- stage: Test
+  jobs:
+    - job: Test
+      steps:
+        - task: DotNetCoreCLI@2
+          inputs:
+            command: 'test'
+            projects: 'sampleUnitTest/sampleUnitTest.csproj'
+            arguments: '--configuration $(buildConfiguration)'
 
-
-
-  - stage: deploy 
-    jobs:
-    - deployment: Deploy 
+# -------------------- DEPLOY STAGE --------------------
+- stage: Deploy
+  jobs:
+    - deployment: Deploy
       environment: 'casestudy3dpgrp'
       strategy:
-       runOnce:
-        deploy:  
-          steps:
-            - task: DownloadBuildArtifacts@1
-              inputs:
-               buildType: 'current'
-               downloadType: 'single'
-               artifactName: 'drop'
-               downloadPath: '$(System.ArtifactsDirectory)'
-       
-            - task: IISWebAppManagementOnMachineGroup@0
-              inputs:
-                EnableIIS: true
-                IISDeploymentType: 'IISWebsite'
-                ActionIISWebsite: 'CreateOrUpdateWebsite'
-                WebsiteName: 'Default Web Site'
-                WebsitePhysicalPath: '%SystemDrive%\inetpub\wwwroot'
-                WebsitePhysicalPathAuth: 'WebsiteUserPassThrough'
+        runOnce:
+          deploy:
+            steps:
+              - task: DownloadBuildArtifacts@1
+                inputs:
+                  buildType: 'current'
+                  downloadType: 'single'
+                  artifactName: 'drop'
+                  downloadPath: '$(System.ArtifactsDirectory)'
 
-                 
-    
+              - task: IISWebAppManagementOnMachineGroup@0
+                inputs:
+                  EnableIIS: true
+                  IISDeploymentType: 'IISWebsite'
+                  ActionIISWebsite: 'CreateOrUpdateWebsite'
+                  WebsiteName: 'DefaultWebSite'
+                  WebsitePhysicalPath: '%SystemDrive%\inetpub\wwwroot'
+                  WebsitePhysicalPathAuth: 'WebsiteUserPassThrough'
 
-            - task: IISWebAppDeploymentOnMachineGroup@0
-              inputs:
-                WebSiteName: 'Default Web Site'
-               # Package: '$(System.ArtifactsDirectory)/drop/WebApplication1.zip'
-                Package: '$(Pipeline.Workspace)/drop/**/*.zip'
+              - task: IISWebAppDeploymentOnMachineGroup@0
+                inputs:
+                  WebSiteName: 'DefaultWebSite'
+                  Package: '$(System.ArtifactsDirectory)/drop/**/*.zip'
+
+              # Optional: Verify deployment
+              - powershell: |
+                  Write-Host "Listing contents of wwwroot:"
+                  Get-ChildItem -Path 'C:\inetpub\wwwroot'
+
+                  Write-Host "Checking IIS Website status:"
+                  Import-Module WebAdministration
+                  Get-Website | Format-Table Name, State, PhysicalPath, Bindings
+
+                  Write-Host "Checking App Pool status:"
+                  Get-WebAppPoolState -Name 'DefaultAppPool'
+                displayName: 'Verify IIS Deployment'
+
