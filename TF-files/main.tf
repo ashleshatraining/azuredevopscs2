@@ -23,7 +23,7 @@ provider "azurerm" {
 
 
 data "azurerm_resource_group" "rg" {
-  name = "backendazurerg"
+  name = "azdcs2"
 }
 resource "azurerm_virtual_network" "vnet" {
   name                = "${var.prefix}vnetwork"
@@ -151,7 +151,7 @@ resource "azurerm_storage_account" "storage" {
 }
 
 resource "azurerm_mssql_server" "sql-server" {
-  name                         = "${var.prefix}server795"
+  name                         = "${var.prefix}server79"
   resource_group_name          = data.azurerm_resource_group.rg.name
   location                     = data.azurerm_resource_group.rg.location
   version                      = "12.0"
