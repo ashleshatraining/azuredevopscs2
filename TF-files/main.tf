@@ -116,7 +116,7 @@ resource "azurerm_storage_account" "my_storage_account" {
 }
 
 resource "azurerm_windows_virtual_machine" "main" {
-  name                  = "${var.prefix}vcs2"
+  name                  = "${var.prefix}vcs1"
   admin_username        = "${var.VMNAME}"
   admin_password        = "admin@12345$"
   location              = data.azurerm_resource_group.rg.location
@@ -139,7 +139,7 @@ resource "azurerm_windows_virtual_machine" "main" {
 }
 
 resource "azurerm_storage_account" "storage" {
-  name                     = "${var.prefix}sa75"
+  name                     = "${var.prefix}sa7"
   resource_group_name      = data.azurerm_resource_group.rg.name
   location                 = data.azurerm_resource_group.rg.location
   account_tier             = "Standard"
@@ -151,7 +151,7 @@ resource "azurerm_storage_account" "storage" {
 }
 
 resource "azurerm_mssql_server" "sql-server" {
-  name                         = "${var.prefix}server79"
+  name                         = "${var.prefix}server7"
   resource_group_name          = data.azurerm_resource_group.rg.name
   location                     = data.azurerm_resource_group.rg.location
   version                      = "12.0"
