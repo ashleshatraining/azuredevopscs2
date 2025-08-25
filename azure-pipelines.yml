@@ -56,8 +56,8 @@ stages:
              command: 'init'
              workingDirectory: '$(System.DefaultWorkingDirectory)/TF-files'
              backendServiceArm: 'azurecs2'
-             backendAzureRmResourceGroupName: 'azdcs2'
-             backendAzureRmStorageAccountName: 'azcs2sa'
+             backendAzureRmResourceGroupName: 'azcs2'
+             backendAzureRmStorageAccountName: 'azcs2sa2'
              backendAzureRmContainerName: 'testcs2'
              backendAzureRmKey: 'terraform.tfstate'
          
@@ -93,8 +93,8 @@ stages:
             command: 'init'
             workingDirectory: '$(System.DefaultWorkingDirectory)/TF-files'
             backendServiceArm: 'azurecs2'
-            backendAzureRmResourceGroupName: 'azdcs2'
-            backendAzureRmStorageAccountName: 'azcs2sa'
+            backendAzureRmResourceGroupName: 'azcs2'
+            backendAzureRmStorageAccountName: 'azcs2sa2'
             backendAzureRmContainerName: 'testcs2'
             backendAzureRmKey: 'terraform.tfstate'
 
