@@ -6,8 +6,8 @@ terraform {
     }
   }
   backend "azurerm" {
-    resource_group_name  = "azdcs2"
-    storage_account_name = "azcs2sa"
+    resource_group_name  = "azcs2"
+    storage_account_name = "azcs2sa2"
     container_name       = "testcs2"
     key                  = "terraform.tfstate"
   }  
@@ -23,7 +23,7 @@ provider "azurerm" {
 
 
 data "azurerm_resource_group" "rg" {
-  name = "azdcs2"
+  name = "azcs2"
 }
 resource "azurerm_virtual_network" "vnet" {
   name                = "${var.prefix}vnetwork"
