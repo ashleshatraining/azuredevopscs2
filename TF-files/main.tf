@@ -127,7 +127,7 @@ resource "azurerm_storage_account" "boot_diag" {
 }
 
 resource "azurerm_windows_virtual_machine" "vm" {
-  name                  = "${var.prefix}-vm"
+  name                  = "${var.prefix}-vm7"
   admin_username        = var.VMNAME
   admin_password        = "admin@12345$"
   location              = data.azurerm_resource_group.rg.location
