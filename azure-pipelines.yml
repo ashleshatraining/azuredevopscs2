@@ -33,7 +33,7 @@ stages:
     
     
     pool: 
-     vmImage: azcs2
+     vmImage: windows-latest
     jobs:
       - job: deploy
         steps: 
