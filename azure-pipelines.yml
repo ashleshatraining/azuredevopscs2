@@ -33,7 +33,7 @@ stages:
     
     
     pool: 
-     vmImage: testazure
+     vmImage: casestudy3dpgrp
     jobs:
       - job: deploy
         steps: 
