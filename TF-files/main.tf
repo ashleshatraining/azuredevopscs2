@@ -6,9 +6,9 @@ terraform {
     }
   }
   backend "azurerm" {
-    resource_group_name  = "backendazurerg"
-    storage_account_name = "backendrg"
-    container_name       = "testbacknd"
+    resource_group_name  = "azdcs2"
+    storage_account_name = "azcs2sa"
+    container_name       = "testcs2"
     key                  = "terraform.tfstate"
   }  
 }
@@ -116,7 +116,7 @@ resource "azurerm_storage_account" "my_storage_account" {
 }
 
 resource "azurerm_windows_virtual_machine" "main" {
-  name                  = "${var.prefix}vm10"
+  name                  = "${var.prefix}vmcs2"
   admin_username        = "${var.VMNAME}"
   admin_password        = "admin@12345$"
   location              = data.azurerm_resource_group.rg.location
