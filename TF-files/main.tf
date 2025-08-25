@@ -89,18 +89,6 @@ resource "azurerm_network_security_group" "nsg" {
   }
 
   security_rule {
-    name                       = "HTTP"
-    priority                   = 340
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  security_rule {
     name                       = "HTTPS"
     priority                   = 320
     direction                  = "Inbound"
@@ -108,6 +96,18 @@ resource "azurerm_network_security_group" "nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "443"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "HTTP"
+    priority                   = 340
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
@@ -149,4 +149,6 @@ resource "azurerm_windows_virtual_machine" "vm" {
   }
 
   boot_diagnostics {
-    storage_account
+    storage_account_uri = azurerm_storage_account.boot_diag.primary_blob_endpoint
+  }
+}
