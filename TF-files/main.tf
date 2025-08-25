@@ -108,7 +108,7 @@ resource "azurerm_network_interface_security_group_association" "nsgassco" {
 
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "my_storage_account" {
-  name                     = "${var.prefix}vmsaccount"
+  name                     = "${var.prefix}vmsacount"
   location                 = data.azurerm_resource_group.rg.location
   resource_group_name      = data.azurerm_resource_group.rg.name
   account_tier             = "Standard"
@@ -116,7 +116,7 @@ resource "azurerm_storage_account" "my_storage_account" {
 }
 
 resource "azurerm_windows_virtual_machine" "main" {
-  name                  = "${var.prefix}vmcs2"
+  name                  = "${var.prefix}vcs2"
   admin_username        = "${var.VMNAME}"
   admin_password        = "admin@12345$"
   location              = data.azurerm_resource_group.rg.location
@@ -139,7 +139,7 @@ resource "azurerm_windows_virtual_machine" "main" {
 }
 
 resource "azurerm_storage_account" "storage" {
-  name                     = "${var.prefix}sa795"
+  name                     = "${var.prefix}sa75"
   resource_group_name      = data.azurerm_resource_group.rg.name
   location                 = data.azurerm_resource_group.rg.location
   account_tier             = "Standard"
