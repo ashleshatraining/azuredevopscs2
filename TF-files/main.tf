@@ -5,51 +5,61 @@ terraform {
       version = "=3.0.0"
     }
   }
+
   backend "azurerm" {
     resource_group_name  = "azcs2"
     storage_account_name = "azcs2sa2"
     container_name       = "testcs2"
     key                  = "terraform.tfstate"
-  }  
+  }
 }
+
 provider "azurerm" {
   features {}
-  subscription_id = "426b8104-3a89-42f0-a3f5-14b554b1b2bb"
-  client_id       = "bf5e8e4f-3aea-40f9-bba6-0978ac70f104"
-  tenant_id       = "09201aea-fd49-442b-9a0d-8de2389cefaf"
-  client_secret   = "WtL8Q~2F1jhXJug7.42TcMEJInkXHZqhYZTfEdoR"
-
+  # Use environment variables for credentials:
+  # ARM_CLIENT_ID, ARM_CLIENT_SECRET, ARM_SUBSCRIPTION_ID, ARM_TENANT_ID
 }
 
+variable "prefix" {
+  description = "Prefix for resource names"
+  type        = string
+  default     = "demo"
+}
+
+variable "VMNAME" {
+  description = "Admin username for the VM"
+  type        = string
+  default     = "adminuser"
+}
 
 data "azurerm_resource_group" "rg" {
   name = "azcs2"
 }
+
 resource "azurerm_virtual_network" "vnet" {
-  name                = "${var.prefix}vnetwork"
+  name                = "${var.prefix}-vnet"
   address_space       = ["10.0.0.0/16"]
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
 }
 
 resource "azurerm_subnet" "subnet" {
-  name                 = "${var.prefix}subnet"
+  name                 = "${var.prefix}-subnet"
   resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.2.0/24"]
 }
 
 resource "azurerm_public_ip" "public_ip" {
-  name                = "${var.prefix}vm_public_ip"
+  name                = "${var.prefix}-public-ip"
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   allocation_method   = "Static"
   sku                 = "Standard"
-
 }
 
 resource "azurerm_network_interface" "nic" {
-  name                = "${var.prefix}nic"
+  name                = "${var.prefix}-nic"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
 
@@ -57,11 +67,12 @@ resource "azurerm_network_interface" "nic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id = azurerm_public_ip.public_ip.id
+    public_ip_address_id          = azurerm_public_ip.public_ip.id
   }
 }
+
 resource "azurerm_network_security_group" "nsg" {
-  name                = "${var.prefix}nsg"
+  name                = "${var.prefix}-nsg"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
 
@@ -76,6 +87,7 @@ resource "azurerm_network_security_group" "nsg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+
   security_rule {
     name                       = "HTTP"
     priority                   = 340
@@ -87,6 +99,7 @@ resource "azurerm_network_security_group" "nsg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+
   security_rule {
     name                       = "HTTPS"
     priority                   = 320
@@ -100,24 +113,22 @@ resource "azurerm_network_security_group" "nsg" {
   }
 }
 
-# Connect the security group to the network interface
-resource "azurerm_network_interface_security_group_association" "nsgassco" {
+resource "azurerm_network_interface_security_group_association" "nsg_assoc" {
   network_interface_id      = azurerm_network_interface.nic.id
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
-# Create storage account for boot diagnostics
-resource "azurerm_storage_account" "my_storage_account" {
-  name                     = "${var.prefix}vmsacount"
+resource "azurerm_storage_account" "boot_diag" {
+  name                     = "${var.prefix}diagstore"
   location                 = data.azurerm_resource_group.rg.location
   resource_group_name      = data.azurerm_resource_group.rg.name
   account_tier             = "Standard"
   account_replication_type = "LRS"
 }
 
-resource "azurerm_windows_virtual_machine" "main" {
-  name                  = "${var.prefix}vcs1"
-  admin_username        = "${var.VMNAME}"
+resource "azurerm_windows_virtual_machine" "vm" {
+  name                  = "${var.prefix}-vm"
+  admin_username        = var.VMNAME
   admin_password        = "admin@12345$"
   location              = data.azurerm_resource_group.rg.location
   resource_group_name   = data.azurerm_resource_group.rg.name
@@ -125,7 +136,7 @@ resource "azurerm_windows_virtual_machine" "main" {
   size                  = "Standard_B2s"
 
   os_disk {
-    name                 = "myOsDisk"
+    name                 = "${var.prefix}-osdisk"
     caching              = "ReadWrite"
     storage_account_type = "Premium_LRS"
   }
@@ -136,23 +147,6 @@ resource "azurerm_windows_virtual_machine" "main" {
     sku       = "2022-datacenter-azure-edition"
     version   = "latest"
   }
-}
 
-resource "azurerm_storage_account" "storage" {
-  name                     = "${var.prefix}sa7"
-  resource_group_name      = data.azurerm_resource_group.rg.name
-  location                 = data.azurerm_resource_group.rg.location
-  account_tier             = "Standard"
-  account_replication_type = "GRS"
-
-  tags = {
-    environment = "staging"
-  }
-}
-
-
-
-  tags = {
-    foo = "bar"
-  }
-}
+  boot_diagnostics {
+    storage_account
