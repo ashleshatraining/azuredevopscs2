@@ -33,7 +33,7 @@ stages:
     
     
     pool: 
-     vmImage: casestudy3dpgrp
+     vmImage: azcs2
     jobs:
       - job: deploy
         steps: 
