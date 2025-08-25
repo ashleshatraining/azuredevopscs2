@@ -20,7 +20,7 @@ stages:
         steps:
           - task: CopyFiles@2
             inputs:
-              SourceFolder: 'TF-files'
+              SourceFolder: '$(Build.SourcesDirectory)/TF-files'
               Contents: '**'
               TargetFolder: '$(Build.ArtifactStagingDirectory)'
           - task: PublishBuildArtifacts@1
@@ -33,7 +33,7 @@ stages:
     
     
     pool: 
-     vmImage: windows-latest
+     vmImage: testazure
     jobs:
       - job: deploy
         steps: 
@@ -55,10 +55,10 @@ stages:
              provider: 'azurerm'
              command: 'init'
              workingDirectory: '$(System.DefaultWorkingDirectory)/TF-files'
-             backendServiceArm: 'AZResourceconn'
-             backendAzureRmResourceGroupName: 'backendazurerg'
-             backendAzureRmStorageAccountName: 'backendrg'
-             backendAzureRmContainerName: 'testbacknd'
+             backendServiceArm: 'azurecs2'
+             backendAzureRmResourceGroupName: 'azdcs2'
+             backendAzureRmStorageAccountName: 'azcs2sa'
+             backendAzureRmContainerName: 'testcs2'
              backendAzureRmKey: 'terraform.tfstate'
          
           
@@ -92,10 +92,10 @@ stages:
             provider: 'azurerm'
             command: 'init'
             workingDirectory: '$(System.DefaultWorkingDirectory)/TF-files'
-            backendServiceArm: 'AZResourceconn'
-            backendAzureRmResourceGroupName: 'backendazurerg'
-            backendAzureRmStorageAccountName: 'backendrg'
-            backendAzureRmContainerName: 'testbacknd'
+            backendServiceArm: 'azurecs2'
+            backendAzureRmResourceGroupName: 'azdcs2'
+            backendAzureRmStorageAccountName: 'azcs2sa'
+            backendAzureRmContainerName: 'testcs2'
             backendAzureRmKey: 'terraform.tfstate'
 
         - task: TerraformTaskV4@4
@@ -104,4 +104,3 @@ stages:
             command: 'destroy'
             workingDirectory: '$(System.DefaultWorkingDirectory)/TF-files'
             environmentServiceNameAzureRM: 'AZResourceconn'
-
